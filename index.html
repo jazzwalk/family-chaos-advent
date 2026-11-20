@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Family Chaos Advent</title></head><body>
+<style>
+/* VOICE: frech, warm, Familienwitz – wie das Spiel Family Chaos, nur im Dezember
+   IDEA: das Puppenhaus aus dem Spiel als verschneites Adventshaus, 24 Geschenk-Türchen darunter
+   PICTURE: Nachthaus im Querschnitt mit S, R, T, M in den Fenstern, vier Katzen im Schnee, Lichterkette
+   COLOUR and TYPE: Nachtblau, Lampengelb, Weihnachtsrot; Fredoka für Titel, Nunito für Text
+   LAYOUT: Titel, Haus groß, Verdacht-Leiste, Raster aus 24 Türchen, Dialog für den Inhalt */
+:root{color-scheme:dark;--bg:#0e1431;--bg2:#18214a;--ink:#f3f1ea;--mut:#aab2d6;--glow:#ffd66b;--red:#e2463c;--grn:#3fb37a}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#24306a,transparent),var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(18px,3vw,40px) max(4vw,14px) 60px}
+h1{font:700 clamp(32px,6vw,52px)/1.05 Fredoka,sans-serif;margin:0;text-wrap:balance}
+h1 span{display:block;font-size:.5em;font-weight:600;color:var(--glow);margin-top:6px}
+.sub{color:var(--mut);margin:10px 0 18px;max-width:62ch}
+.scene{position:relative;border-radius:22px;overflow:hidden;background:#0b1029;box-shadow:0 20px 50px #0008;aspect-ratio:800/360}
+.scene svg{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:18px 0 20px;padding:14px 16px;background:var(--bg2);border-radius:16px}
+.meter{flex:1 1 220px}
+.meter b{font:600 15px Fredoka,sans-serif}
+.track{height:14px;border-radius:9px;background:#0b1029;overflow:hidden;margin-top:6px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#ffd66b,#ff8a3c,#e2463c);transition:width .5s}
+.stat{font:600 15px Fredoka,sans-serif;white-space:nowrap}
+.stat em{font-style:normal;color:var(--glow);font-size:20px}
+.msg{flex:1 1 100%;color:var(--mut);font-size:15px;min-height:1.5em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(130px,30%),1fr));gap:12px}
+.door{position:relative;aspect-ratio:1;border:0;padding:0;cursor:pointer;background:transparent;perspective:600px;font:inherit;color:inherit;border-radius:14px}
+.door:focus-visible{outline:3px solid var(--glow);outline-offset:3px}
+.in,.lid{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;text-align:center}
+.in{background:#0b1029;box-shadow:inset 0 0 0 2px #2b3670}
+.in svg{width:52%;height:auto}
+.in small{font:600 13px/1.15 Fredoka,sans-serif;margin-top:4px;color:var(--ink)}
+.in.done small::after{content:" ✓";color:var(--grn)}
+.lid{background:var(--c);transform-origin:left center;transition:transform .7s cubic-bezier(.3,.8,.3,1.1);box-shadow:inset 0 -6px 0 #0003,0 6px 14px #0006;overflow:hidden}
+.lid::before,.lid::after{content:"";position:absolute;background:#fff3}
+.lid::before{left:calc(50% - 6px);top:0;bottom:0;width:12px}
+.lid::after{top:calc(50% - 6px);left:0;right:0;height:12px}
+.lid i{position:relative;z-index:1;font:700 clamp(30px,6vw,44px)/1 Fredoka,sans-serif;font-style:normal;text-shadow:0 3px 0 #0004}
+.lid .lock{position:absolute;z-index:1;bottom:7px;right:9px;width:16px;height:16px;opacity:.75}
+.door.open .lid{transform:rotateY(-100deg);pointer-events:none}
+.door.today .lid{animation:wig 2.4s infinite}
+@keyframes wig{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-4deg)}95%{transform:rotate(4deg)}}
+.dlg{position:fixed;top:0;right:0;bottom:0;left:0;background:#05081acc;display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.dlg.on{display:flex}
+.card{background:var(--bg2);border-radius:22px;max-width:520px;width:100%;padding:22px;box-shadow:0 30px 60px #000a;max-height:92vh;overflow:auto;animation:pop .35s}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.head{display:flex;gap:14px;align-items:center}
+.head svg{width:72px;height:72px;flex:none}
+.card h2{font:700 26px/1.1 Fredoka,sans-serif;margin:0}
+.card .who{color:var(--glow);font:600 14px Fredoka,sans-serif}
+.card p{margin:14px 0}
+.task{background:#0b1029;border-radius:14px;padding:12px 14px}
+.task b{font:600 15px Fredoka,sans-serif;color:var(--glow)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+button.b{min-height:44px;padding:0 18px;border-radius:12px;border:0;font:600 16px Fredoka,sans-serif;cursor:pointer;background:#2b3670;color:var(--ink)}
+button.b.main{background:var(--glow);color:#2a1d00}
+button.b.red{background:var(--red);color:#fff}
+button.b:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.foot{color:var(--mut);font-size:13px;margin-top:22px}
+@media(prefers-reduced-motion:reduce){.lid,.door.today .lid,.card,.flake,.smoke{animation:none!important;transition:none!important}}
+.flake{animation:fall linear infinite}
+@keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(380px)}}
+.bulb{animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.35}}
+.smoke{animation:rise 4s infinite ease-out}
+@keyframes rise{from{transform:translate(0,0);opacity:.7}to{transform:translate(14px,-50px);opacity:0}}
+
+/* Switch / alte Browser */
+.scene{height:0;padding-bottom:45%}
+.door{height:0;padding-bottom:100%}
+.grid{grid-template-columns:repeat(6,1fr);grid-gap:12px}
+.bar>*{margin:0 14px 8px 0}
+.btns>*{margin:0 10px 10px 0}
+.head>svg{margin-right:14px}
+@media (min-aspect-ratio:4/3) and (min-width:800px){
+ html,body{height:100%;overflow:hidden}
+ .wrap{max-width:none;height:100vh;display:grid;grid-template-columns:46% minmax(0,1fr);grid-template-rows:auto auto 1fr;grid-template-areas:"t bar" "sub bar" "scene grid";grid-column-gap:22px;padding:14px 20px}
+ .wrap>*{margin:0!important}
+ h1{grid-area:t;font-size:34px}
+ .sub{grid-area:sub;font-size:14px;margin-top:8px!important}
+ .scene{grid-area:scene;align-self:start;margin-top:14px!important}
+ .bar{grid-area:bar;padding:8px 12px}
+ .grid{grid-area:grid;grid-gap:9px;align-self:start;margin-top:14px!important}
+ .lid i{font-size:30px}
+ .foot{display:none}
+}
+</style>
+<div class="wrap">
+  <h1>Family Chaos <span>Der Adventskalender, bei dem keiner seine Ruhe hat</span></h1>
+  <p class="sub">24 Türchen voller Familienchaos mit S, R, T, M und den vier Katzen. Jeden Tag gibt es eine Geschichte und eine echte Aufgabe für die ganze Familie. Heimlich vorgucken geht – aber die Katzen petzen.</p>
+
+  <div class="scene" id="scene"></div>
+
+  <div class="bar">
+    <div class="meter"><b>Verdacht beim Vorgucken</b><div class="track"><div class="fill" id="fill"></div></div></div>
+    <div class="stat">Offen <em id="cOpen">0</em>/24</div>
+    <div class="stat">Erledigt <em id="cDone">0</em></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <p class="foot">Türchen öffnen sich ab dem jeweiligen Dezembertag. Gespeichert wird nur in diesem Browser.</p>
+</div>
+
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dT"><div class="card" id="card"></div></div>
+
+<script>
+{
+  let face2 = function(w) {
+    const p = P[w];
+    if (w === "ALL") return '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#24306a"/><g transform="translate(6 18) scale(.45)">' + inner2("S") + '</g><g transform="translate(50 18) scale(.45)">' + inner2("R") + '</g><g transform="translate(6 52) scale(.45)">' + inner2("T") + '</g><g transform="translate(50 52) scale(.45)">' + inner2("M") + "</g></svg>";
+    return '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#24306a"/>' + inner2(w) + "</svg>";
+  }, inner2 = function(w) {
+    const p = P[w];
+    if (p.cat) return '<path d="M24 40 L30 12 L46 30 Z M76 40 L70 12 L54 30 Z" fill="#c4c8d2"/><path d="M29 34 L32 20 L40 30Z M71 34 L68 20 L60 30Z" fill="#f2a7bd"/><ellipse cx="50" cy="52" rx="30" ry="26" fill="#cdd1da"/><ellipse cx="39" cy="50" rx="4.5" ry="6" fill="#2a2a30"/><ellipse cx="61" cy="50" rx="4.5" ry="6" fill="#2a2a30"/><circle cx="40" cy="48" r="1.6" fill="#fff"/><circle cx="62" cy="48" r="1.6" fill="#fff"/><path d="M47 59 L53 59 L50 62Z" fill="#e88aa3"/><path d="M50 62 Q46 67 42 64 M50 62 Q54 67 58 64" stroke="#555" stroke-width="1.6" fill="none"/><path d="M22 58 L8 55 M22 62 L9 64 M78 58 L92 55 M78 62 L91 64" stroke="#888" stroke-width="1.3"/><path d="M26 74 Q50 86 74 74" stroke="' + p.cat + '" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="50" cy="82" r="4" fill="#ffd66b"/>';
+    const r = p.big ? 27 : 23, cy = p.big ? 44 : 46;
+    return '<path d="M18 100 Q18 74 50 72 Q82 74 82 100Z" fill="' + p.shirt + '"/>' + (p.long ? '<path d="M' + (50 - r - 3) + " " + cy + " Q" + (50 - r - 6) + " 86 " + (50 - r + 4) + " 84 L" + (50 + r - 4) + " 84 Q" + (50 + r + 6) + " 86 " + (50 + r + 3) + " " + cy + 'Z" fill="' + p.hair + '"/>' : "") + '<circle cx="50" cy="' + cy + '" r="' + r + '" fill="#f2c9a0"/><path d="M' + (50 - r) + " " + (cy - 2) + " Q" + (50 - r) + " " + (cy - r - 6) + " 50 " + (cy - r - 4) + " Q" + (50 + r) + " " + (cy - r - 6) + " " + (50 + r) + " " + (cy - 2) + " Q" + (50 + r / 2) + " " + (cy - r / 2) + " 50 " + (cy - r / 2) + " Q" + (50 - r / 2) + " " + (cy - r / 2) + " " + (50 - r) + " " + (cy - 2) + 'Z" fill="' + p.hair + '"/><circle cx="' + (50 - r * 0.38) + '" cy="' + (cy + 2) + '" r="' + r * 0.27 + '" fill="#ffffff22" stroke="#222" stroke-width="2.4"/><circle cx="' + (50 + r * 0.38) + '" cy="' + (cy + 2) + '" r="' + r * 0.27 + '" fill="#ffffff22" stroke="#222" stroke-width="2.4"/><path d="M' + (50 - r * 0.11) + " " + (cy + 2) + " H" + (50 + r * 0.11) + '" stroke="#222" stroke-width="2.4"/><circle cx="' + (50 - r * 0.38) + '" cy="' + (cy + 2) + '" r="2.2" fill="#222"/><circle cx="' + (50 + r * 0.38) + '" cy="' + (cy + 2) + '" r="2.2" fill="#222"/><path d="M' + (50 - r * 0.3) + " " + (cy + r * 0.5) + " Q50 " + (cy + r * 0.78) + " " + (50 + r * 0.3) + " " + (cy + r * 0.5) + '" stroke="#8a3b2a" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="' + (50 - r * 0.62) + '" cy="' + (cy + r * 0.42) + '" r="3.5" fill="#f59b9b88"/><circle cx="' + (50 + r * 0.62) + '" cy="' + (cy + r * 0.42) + '" r="3.5" fill="#f59b9b88"/>';
+  }, scene2 = function() {
+    let fl = "";
+    for (let i = 0; i < 60; i++) {
+      const x = i * 137 % 800, r = 1 + i % 3, d = 6 + i % 7, dl = -(i * 0.37) % d;
+      fl += '<circle class="flake" cx="' + x + '" cy="0" r="' + r + '" fill="#fff" opacity=".8" style="animation-duration:' + d + "s;animation-delay:" + dl + 's"/>';
+    }
+    let bulbs = "";
+    const bc = ["#ff5a4e", "#ffd66b", "#4fd18b", "#5ab0ff", "#ff7fb5"];
+    for (let i = 0; i < 15; i++) {
+      const t = i / 14, x = 232 + t * 336, y = 128 - Math.sin(t * Math.PI) * 0 + (i % 2 ? 6 : 0);
+      bulbs += '<circle class="bulb" cx="' + x + '" cy="' + (y + 4) + '" r="5" fill="' + bc[i % 5] + '" style="animation-delay:' + i * 0.21 + 's"/>';
+    }
+    const win = (x, y, w) => '<g><rect x="' + x + '" y="' + y + '" width="90" height="72" rx="8" fill="#ffd66b"/><rect x="' + x + '" y="' + y + '" width="90" height="72" rx="8" fill="url(#wg)"/><g transform="translate(' + (x + 21) + " " + (y + 14) + ') scale(.48)">' + inner2(w) + '</g><rect x="' + x + '" y="' + y + '" width="90" height="72" rx="8" fill="none" stroke="#5a3520" stroke-width="5"/><rect x="' + (x - 6) + '" y="' + (y + 70) + '" width="102" height="9" rx="4" fill="#f4f7ff"/></g>';
+    const cat = (x, w, s) => '<g transform="translate(' + x + " 268) scale(" + s + ')"><ellipse cx="50" cy="96" rx="34" ry="22" fill="#c4c8d2"/><path d="M80 96 Q104 80 96 56" stroke="#c4c8d2" stroke-width="9" fill="none" stroke-linecap="round"/><g transform="translate(0 -6)">' + inner2(w) + "</g></g>";
+    return '<svg viewBox="0 0 800 360" preserveAspectRatio="xMidYMid slice" aria-label="Verschneites Family-Chaos-Haus bei Nacht mit S, R, T und M in den Fenstern und vier Katzen im Schnee"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1029"/><stop offset="1" stop-color="#2a3577"/></linearGradient><radialGradient id="wg"><stop offset="0" stop-color="#fff6c8" stop-opacity=".7"/><stop offset="1" stop-color="#ffb43c" stop-opacity=".35"/></radialGradient><radialGradient id="halo"><stop offset="0" stop-color="#ffd66b" stop-opacity=".35"/><stop offset="1" stop-color="#ffd66b" stop-opacity="0"/></radialGradient></defs><rect width="800" height="360" fill="url(#sky)"/><circle cx="680" cy="64" r="34" fill="#fff4d0"/><circle cx="694" cy="56" r="30" fill="#0f1534" opacity=".9"/><g fill="#fff" opacity=".7"><circle cx="90" cy="50" r="1.5"/><circle cx="160" cy="90" r="1"/><circle cx="560" cy="40" r="1.4"/><circle cx="610" cy="120" r="1"/><circle cx="40" cy="140" r="1.2"/><circle cx="760" cy="150" r="1.3"/></g><path d="M0 270 Q120 230 260 262 L260 360 L0 360Z" fill="#1d2860"/><path d="M540 262 Q680 228 800 258 L800 360 L540 360Z" fill="#1d2860"/><g><path d="M90 268 l18-46 18 46z M70 272 l14-34 14 34z" fill="#1f5a45"/><path d="M90 268 l18-46 18 46z" fill="#fff" opacity=".25"/><path d="M690 262 l20-52 20 52z M720 266 l14-36 14 36z" fill="#1f5a45"/></g><ellipse cx="400" cy="200" rx="230" ry="150" fill="url(#halo)"/><rect x="500" y="52" width="34" height="62" fill="#7a2e3b"/><rect x="496" y="46" width="42" height="12" rx="4" fill="#f4f7ff"/><g fill="#cfd6ee"><circle class="smoke" cx="517" cy="36" r="9"/><circle class="smoke" cx="517" cy="36" r="7" style="animation-delay:1.3s"/><circle class="smoke" cx="517" cy="36" r="8" style="animation-delay:2.6s"/></g><path d="M210 132 L400 40 L590 132Z" fill="#8b3241"/><path d="M210 132 L400 40 L590 132 L570 132 L400 52 L230 132Z" fill="#f4f7ff"/><path d="M200 136 Q400 120 600 136 L600 128 Q400 112 200 128Z" fill="#f4f7ff"/><g transform="translate(276 82)"><path d="M0 22 Q14 0 28 22Z" fill="#c9cfdf"/><path d="M14 22 v10" stroke="#9aa3bd" stroke-width="3"/></g><g transform="translate(410 26)"><ellipse cx="0" cy="16" rx="13" ry="10" fill="#8f97ad"/><circle cx="10" cy="7" r="7" fill="#8f97ad"/><path d="M17 7 l7 2-7 2z" fill="#e0a43a"/><circle cx="12" cy="5" r="1.5" fill="#111"/><path d="M4 2 L12 -14 L17 2Z" fill="#e2463c"/><circle cx="12" cy="-14" r="3" fill="#fff"/><path d="M3 2 H18" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><path d="M232 132 Q400 152 568 132" stroke="#2a2a2a" stroke-width="2" fill="none"/>' + bulbs + '<rect x="222" y="136" width="356" height="162" fill="#3a2a52"/><rect x="222" y="136" width="356" height="162" fill="#000" opacity=".08"/>' + win(242, 152, "T") + win(355, 152, "M") + win(468, 152, "S") + '<rect x="360" y="232" width="62" height="66" rx="6" fill="#7a2e3b"/><circle cx="391" cy="252" r="16" fill="none" stroke="#2f9e6a" stroke-width="8"/><circle cx="391" cy="238" r="4" fill="#e2463c"/><circle cx="410" cy="268" r="3" fill="#ffd66b"/><g><rect x="242" y="236" width="90" height="56" rx="8" fill="#ffd66b"/><rect x="242" y="236" width="90" height="56" rx="8" fill="url(#wg)"/><g transform="translate(263 244) scale(.48)">' + inner2("R") + '</g><rect x="242" y="236" width="90" height="56" rx="8" fill="none" stroke="#5a3520" stroke-width="5"/></g><g><rect x="452" y="236" width="106" height="56" rx="8" fill="#ffd66b"/><rect x="452" y="236" width="106" height="56" rx="8" fill="url(#wg)"/><path d="M505 246 l16 36 h-32z" fill="#2f9e6a"/><path d="M505 238 l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="#ffd66b" stroke="#c48a10"/><circle cx="498" cy="262" r="3" fill="#e2463c"/><circle cx="512" cy="270" r="3" fill="#5ab0ff"/><circle cx="502" cy="276" r="3" fill="#ff7fb5"/><rect x="452" y="236" width="106" height="56" rx="8" fill="none" stroke="#5a3520" stroke-width="5"/></g><path d="M0 300 Q200 284 400 298 T800 296 L800 360 L0 360Z" fill="#eef2ff"/><path d="M0 318 Q220 306 420 318 T800 314 L800 360 L0 360Z" fill="#d6ddf5"/>' + cat(70, "Nia", 0.62) + cat(150, "Nelli", 0.58) + cat(600, "Nala", 0.6) + cat(690, "Mogli", 0.62) + '<g transform="translate(122 240)"><rect x="-6" y="-4" width="62" height="24" rx="10" fill="#fff"/><path d="M6 20 l-4 10 12-10z" fill="#fff"/><text x="25" y="13" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="13" fill="#e2463c">MIAU!</text></g>' + fl + "</svg>";
+  }, render2 = function() {
+    grid.innerHTML = ORDER.map((n, i) => {
+      const d = D[n - 1], o = st.open.includes(n);
+      return '<button class="door' + (o ? " open" : "") + (n === today && !o ? " today" : "") + '" data-n="' + n + '" aria-label="Türchen ' + n + (o ? ", offen: " + d[1] : "") + '"><span class="in' + (st.done.includes(n) ? " done" : "") + '">' + face2(d[0]) + "<small>" + d[1] + '</small></span><span class="lid" style="--c:' + COLS[i % COLS.length] + '"><i>' + n + "</i>" + (free(n) ? "" : lockSvg) + "</span></button>";
+    }).join("");
+    document.getElementById("cOpen").textContent = st.open.length;
+    document.getElementById("cDone").textContent = st.done.length;
+    document.getElementById("fill").style.width = Math.min(100, st.sus) + "%";
+  }, tone2 = function(f, t, d, type) {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type || "triangle";
+      o.frequency.setValueAtTime(f, ac.currentTime + t);
+      g.gain.setValueAtTime(1e-4, ac.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.18, ac.currentTime + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(1e-4, ac.currentTime + t + d);
+      o.connect(g);
+      g.connect(ac.destination);
+      o.start(ac.currentTime + t);
+      o.stop(ac.currentTime + t + d + 0.05);
+    } catch (e) {
+    }
+  }, meow2 = function() {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+      o.type = "sawtooth";
+      o.frequency.setValueAtTime(500, t);
+      o.frequency.linearRampToValueAtTime(900, t + 0.15);
+      o.frequency.linearRampToValueAtTime(420, t + 0.5);
+      g.gain.setValueAtTime(1e-4, t);
+      g.gain.exponentialRampToValueAtTime(0.12, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(1e-4, t + 0.55);
+      o.connect(g);
+      g.connect(ac.destination);
+      o.start(t);
+      o.stop(t + 0.6);
+    } catch (e) {
+    }
+  }, close2 = function() {
+    dlg.classList.remove("on");
+    if (last) {
+      const b = grid.querySelector('[data-n="' + last + '"]');
+      b && b.focus();
+    }
+  }, show2 = function(n) {
+    const d = D[n - 1], dn = st.done.includes(n);
+    last = n;
+    card.innerHTML = '<div class="head">' + face2(d[0]) + '<div><div class="who">Türchen ' + n + " · " + P[d[0]].n + '</div><h2 id="dT">' + d[1] + "</h2></div></div><p>" + d[2] + '</p><div class="task"><b>Familien-Aufgabe</b><br>' + d[3] + '</div><div class="btns"><button class="b main" id="bDone">' + (dn ? "Doch nicht erledigt" : "Aufgabe erledigt") + '</button><button class="b" id="bX">Schließen</button></div>';
+    dlg.classList.add("on");
+    document.getElementById("bX").onclick = close2;
+    document.getElementById("bDone").onclick = () => {
+      if (dn) st.done = st.done.filter((x) => x !== n);
+      else {
+        st.done.push(n);
+        jingle();
+      }
+      save();
+      render2();
+      show2(n);
+    };
+    document.getElementById("bX").focus();
+  }, locked2 = function(n) {
+    last = n;
+    card.innerHTML = '<div class="head">' + face2("Mogli") + '<div><div class="who">Türchen ' + n + '</div><h2 id="dT">Noch zu!</h2></div></div><p>Dieses Türchen ist erst am ' + n + '. Dezember dran. Natürlich könntest du heimlich gucken … aber die Katzen sehen alles.</p><div class="btns"><button class="b red" id="bPeek">Heimlich gucken</button><button class="b" id="bX">Brav warten</button></div>';
+    dlg.classList.add("on");
+    document.getElementById("bX").onclick = () => {
+      msg("Brav! S: „Oh, ihr wartet? Dann hab ich ja meine Ruhe.“");
+      close2();
+    };
+    document.getElementById("bPeek").onclick = () => {
+      const p = PETZE[Math.floor(Math.random() * 4)];
+      meow2();
+      st.sus += p[0] === "Nala" ? 6 : 18;
+      if (st.sus >= 100) {
+        st.sus = 0;
+        save();
+        render2();
+        card.innerHTML = '<div class="head">' + face2("R") + '<div><div class="who">Verdacht 100 %</div><h2 id="dT">ERWISCHT!</h2></div></div><p>R steht in der Tür: „Komm, mach mal mit im Haushalt!“ Zur Strafe: heute die Spülmaschine ausräumen. Und Türchen ' + n + ' bleibt zu.</p><div class="btns"><button class="b main" id="bX">Okay …</button></div>';
+        document.getElementById("bX").onclick = close2;
+        document.getElementById("bX").focus();
+        msg("Erwischt! Der Verdacht ist wieder auf null – aber die Spülmaschine wartet.");
+        return;
+      }
+      msg(p[1]);
+      if (!st.open.includes(n)) st.open.push(n);
+      save();
+      render2();
+      setTimeout(() => show2(n), 650);
+    };
+    document.getElementById("bPeek").focus();
+  };
+  var face = face2, inner = inner2, scene = scene2, render = render2, tone = tone2, meow = meow2, close = close2, show = show2, locked = locked2;
+  const P = {
+    S: { n: "S (Papa)", hair: "#3d3d44", shirt: "#3b6fd8" },
+    R: { n: "R (Mama)", hair: "#7a4a2a", shirt: "#f28cb8", long: 1 },
+    T: { n: "T", hair: "#6b4226", shirt: "#e0453a" },
+    M: { n: "M", hair: "#b07d4c", shirt: "#22337a", big: 1 },
+    Nia: { n: "Nia", cat: "#ff7fb5" },
+    Nelli: { n: "Nelli", cat: "#e63a3a" },
+    Nala: { n: "Nala", cat: "#ffd23f" },
+    Mogli: { n: "Mogli", cat: "#3fa0ff" },
+    ALL: { n: "Alle zusammen" }
+  };
+  const D = [
+    ["Mogli", "6 Uhr. MIAU.", "Mogli miaut pünktlich um 6 Uhr, als wüsste er, dass heute der Advent beginnt. S zieht sich die Decke über den Kopf: „Oh nee, ich hab meine Ruhe.“ Hat er nicht.", "Wer heute zuerst wach ist, macht für alle Kakao."],
+    ["T", "AUA! Lego!", "Unter dem Adventskranz liegt ein einzelner Legostein. R findet ihn barfuß. Das ganze Haus hört es. T behauptet, der Stein sei „Deko“.", "5-Minuten-Lego-Blitz: T gegen M, wer räumt mehr Steine weg?"],
+    ["Nia", "Teig-Diebin", "R backt Plätzchen. Nia sitzt auf der Arbeitsplatte und ist sehr unschuldig. Ein Stern aus Teig fehlt. Nia hat einen Stern am Schnurrbart.", "Plätzchen backen. M bewertet: Bäh, geht so oder FEIN?"],
+    ["S", "Lichterketten-Knoten", "S holt die Lichterkette aus dem Keller. Sie ist ein einziger Knoten. Nach 40 Minuten leuchtet sie – aber nur die Hälfte. „Nächste Woche kauf ich eine neue.“", "Lichterkette gemeinsam entwirren und aufhängen."],
+    ["M", "Stiefel-Alarm", "Morgen kommt der Nikolaus. Ms Fußballschuhe sind voller Schlamm. T stellt seine Stiefel extra groß hin, „damit mehr reinpasst“.", "Stiefel putzen – wessen Stiefel glänzt am meisten?"],
+    ["M", "KETCHUP!", "Nikolausmorgen. In Ms Stiefel: Schokolade, Mandarinen und ein Zettel. M liest vor und ruft beim Frühstück trotzdem: „KETCHUP!“ Zum Nikolaus-Zopf.", "Nikolausfrühstück – mit Ketchup, wenn es unbedingt sein muss."],
+    ["T", "DING DONG!", "Es klingelt. Und klingelt. Und klingelt. Am Ende sitzen sechs Freunde in den Kinderzimmern und die Plätzchendose ist leer. R: „Schon wieder?!“", "Freunde einladen und zusammen Plätzchen naschen."],
+    ["R", "Das lange Telefonat", "R telefoniert im Liegestuhl mit einer Freundin. Über Geschenke. 90 Minuten. Freifahrt für T und M! Aber diesmal basteln sie … wirklich.", "Weihnachtskarten für Oma, Freunde oder die Lehrerin schreiben."],
+    ["Nelli", "Die Kugel-Jagd", "Nelli jagt Nia durchs Wohnzimmer, einmal um den Sessel, einmal durch die Deko-Kiste. Eine Kugel rollt unters Sofa. Nala schaut zu und versteht nichts.", "Eine neue Baumkugel oder einen Anhänger selbst basteln."],
+    ["T", "Physik! Ehrlich!", "„Das ist Mark Rober, da lernen wir was über Schneeflocken!“ Diesmal stimmt es sogar. S ist verwirrt.", "Papier-Schneeflocken falten und ans Fenster kleben."],
+    ["Nala", "40 Mützen", "Nala ist über Mamas iPad gelaufen. Unterwegs: 40 Weihnachtsmützen für Katzen. S schaut Nala lange an. Nala schaut zurück. Nala denkt an nichts.", "Katzen-Verwöhntag: Leckerli und eine extra Kuschelrunde."],
+    ["ALL", "Die Familienband", "T am Schlagzeug, M an der Gitarre, S am E-Piano im Keller. R singt mit. Die Katzen fliehen in den Garten. Es klingt … laut. Und schön.", "Familienkonzert mit einem Weihnachtslied."],
+    ["ALL", "Stromausfall", "Alles dunkel. Kein Fernseher, kein WLAN, kein Fußball. Nur Kerzen und ein Kartenspiel. Nach einer Stunde will keiner, dass der Strom wiederkommt.", "Spieleabend ganz ohne Bildschirm."],
+    ["T", "Dampfnudel-Rekord", "R macht Dampfnudeln. T schafft drei. Dann vier. M sagt nichts – und isst weiter. Das ist fast ein „fein“.", "Jeder darf sich ein Lieblingsessen für die Woche wünschen."],
+    ["S", "Aufgerafft?", "S wollte heute zum Tennis. Dann war es draußen kalt. Und der Sessel so warm. „Nächste Woche bestimmt.“ Nelli liegt schon auf seinem Schoß.", "Winterspaziergang – alle vier, auch S."],
+    ["M", "Wo ist Fuffi?", "Fuffi und Wanders sind weg! Die Jungs suchen das ganze Haus ab. Gefunden im Schrank im Schlafzimmer – direkt neben verdächtig eingepackten Paketen. Schnell wieder zu!", "Kuscheltier-Verstecken: eins versteckt, alle suchen."],
+    ["M", "Der Wunschzettel", "M wünscht sich ein Raumschiff aus Lego mit 7000 Teilen. T wünscht sich „alles mit Spider-Man“. S rechnet. Dann rechnet er nochmal.", "Wunschzettel malen und an den Kühlschrank hängen."],
+    ["R", "Dorfnachrichten", "Nachbarin N klingelt am Gartentor. Neues vom Bäcker, von der Kerwe und vom Weihnachtsmarkt. R kommt nach einer Stunde zurück, der Tee ist kalt.", "Den Nachbarn eine kleine Tüte Plätzchen bringen."],
+    ["S", "Eingepackt", "S packt Geschenke ein. Viel Klebeband. Sehr viel Klebeband. Plötzlich bewegt sich ein Paket: Nelli war mit drin.", "Geschenke einpacken – mit Weihnachtsmusik."],
+    ["ALL", "Bad-Frieden", "„Das ist MEIN Handtuch!“ – „Ich war zuerst am Waschbecken!“ Dann ein Wunder: Die Jungs putzen nebeneinander Zähne und grinsen sich im Spiegel an. Streit-Balken: null.", "Jeder macht jedem in der Familie ein Kompliment."],
+    ["T", "Kürzester Tag", "Um halb fünf ist es dunkel. Perfekt: Heute ist Filmabend mit einem Heldenfilm. T hat schon die Kissenburg auf dem Sofa gebaut.", "Filmabend mit Popcorn und Decken."],
+    ["Mogli", "Katze im Baum", "Der Baum steht. Die Kugeln hängen. Ganz oben, wo der Stern hin soll, schläft Mogli. Niemand traut sich, ihn zu wecken.", "Gemeinsam den Weihnachtsbaum schmücken."],
+    ["R", "Nur noch eine Mail", "R hat den Großeinkauf ausgepackt, die Küche ist voll. S: „Ich komm gleich, nur noch eine Mail.“ T und M schneiden schon Gurken. Ein Weihnachtswunder.", "Alle helfen in der Küche – jeder bekommt eine Aufgabe."],
+    ["ALL", "Das ist FEIN!", "Heiligabend. Alle Handys liegen in der Schublade – auch die von S und R! Die Katzen tragen (eine) Mütze. Beim Essen sagt M: „Das ist FEIN!“ R strahlt heller als der Baum.", "Ein Familienfoto machen. Frohe Weihnachten!"]
+  ];
+  const ORDER = [13, 4, 20, 9, 1, 17, 23, 7, 11, 3, 15, 22, 6, 19, 2, 10, 24, 8, 14, 5, 18, 12, 21, 16];
+  const COLS = ["#e2463c", "#2f9e6a", "#3b6fd8", "#d9a21c", "#b8457e", "#e0703a", "#2b8fa8", "#7a55c7"];
+  const K = "fc-advent-2026";
+  let st = { open: [], done: [], sus: 0 };
+  try {
+    const s = JSON.parse(localStorage.getItem(K));
+    if (s) st = Object.assign(st, s);
+  } catch (e) {
+  }
+  const save = () => {
+    try {
+      localStorage.setItem(K, JSON.stringify(st));
+    } catch (e) {
+    }
+  };
+  document.getElementById("scene").innerHTML = scene2();
+  const now = /* @__PURE__ */ new Date(), mo = now.getMonth();
+  const today = mo === 11 ? now.getDate() : mo < 6 && mo >= 0 && now.getFullYear() > 2026 ? 25 : 0;
+  const free = (n) => n <= today;
+  const grid = document.getElementById("grid");
+  const lockSvg = '<svg class="lock" viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="8" rx="2" fill="#fff"/><path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="#fff" stroke-width="2" fill="none"/></svg>';
+  const msg = (t) => document.getElementById("msg").textContent = t;
+  if (today === 0) {
+    const d1 = new Date(now.getFullYear(), 11, 1);
+    const left = Math.ceil((d1 - now) / 864e5);
+    msg("Noch " + left + " Tage bis zum ersten Türchen. Mogli stellt schon mal den Wecker auf 6 Uhr.");
+  } else if (today <= 24) msg("Heute ist Türchen " + today + " dran – es wackelt schon.");
+  else msg("Frohe Weihnachten! Alle Türchen sind offen.");
+  let ac;
+  const jingle = () => [659, 659, 659, 0, 659, 659, 659, 0, 659, 784, 523, 587, 659].forEach((f, i) => f && tone2(f, i * 0.12, 0.18));
+  const dlg = document.getElementById("dlg"), card = document.getElementById("card");
+  let last = null;
+  const PETZE = [["Nia", "Nia: „MIAU! Hab alles gesehen! Und ich hab HUNGER!“"], ["Nelli", "Nelli faucht. Das heißt: Ich sag’s R."], ["Nala", "Nala miaut laut … in die falsche Richtung. Glück gehabt."], ["Mogli", "Mogli wacht auf und miaut. Es ist nicht mal 6 Uhr!"]];
+  grid.addEventListener("click", (e) => {
+    const b = e.target.closest(".door");
+    if (!b) return;
+    const n = +b.dataset.n;
+    if (st.open.includes(n)) {
+      show2(n);
+      return;
+    }
+    if (!free(n)) {
+      locked2(n);
+      return;
+    }
+    st.open.push(n);
+    save();
+    render2();
+    jingle();
+    setTimeout(() => show2(n), 650);
+  });
+  dlg.addEventListener("click", (e) => {
+    if (e.target === dlg) close2();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && dlg.classList.contains("on")) close2();
+  });
+  render2();
+}
+</script>
+</body></html>
